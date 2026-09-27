@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Registro de visitas · Privadas del Río</title>
+<style>
+  :root{
+    --bg:#f4f5f2; --card:#ffffff; --ink:#1b2420; --muted:#66706a; --line:#dfe3dd;
+    --brand:#1f5a3f; --brand-ink:#ffffff; --brand-soft:#e5f0ea; --warn:#b4540a; --warn-soft:#fff1e3;
+    --danger:#b3261e; --radius:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  header{background:var(--brand);color:var(--brand-ink);padding:20px 16px 26px}
+  header .sub{opacity:.8;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
+  header h1{margin:4px 0 0;font-size:22px;font-weight:650}
+  main{max-width:560px;margin:-14px auto 40px;padding:0 12px}
+  .card{background:var(--card);border-radius:var(--radius);padding:18px 16px;margin-bottom:12px;box-shadow:0 1px 2px rgba(0,0,0,.05)}
+  .step{display:flex;align-items:center;gap:10px;margin:0 0 12px;font-size:15px;font-weight:650}
+  .step b{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--brand);color:#fff;font-size:13px}
+  label{display:block;font-size:13px;color:var(--muted);margin:12px 0 5px}
+  input,select,textarea{width:100%;font:inherit;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink)}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:-1px;border-color:transparent}
+  textarea{min-height:70px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .tiles{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .tile{border:1.5px solid var(--line);background:#fff;border-radius:12px;padding:12px 10px;text-align:left;font:inherit;cursor:pointer;color:var(--ink)}
+  .tile .ico{font-size:22px;display:block;margin-bottom:4px}
+  .tile .t{font-weight:600;font-size:14px;line-height:1.2}
+  .tile[aria-pressed="true"]{border-color:var(--brand);background:var(--brand-soft)}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font:inherit;font-size:14px;cursor:pointer;color:var(--ink)}
+  .chip[aria-pressed="true"]{background:var(--brand);border-color:var(--brand);color:#fff}
+  .hide{display:none!important}
+  .toggle{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:15px}
+  .toggle input{width:20px;height:20px;accent-color:var(--brand)}
+  .note{font-size:13px;color:var(--muted);margin-top:6px}
+  .alert{background:var(--warn-soft);color:var(--warn);border-radius:10px;padding:10px 12px;font-size:14px;margin-top:10px}
+  .btn{width:100%;border:0;border-radius:12px;padding:15px;font:inherit;font-weight:650;font-size:16px;cursor:pointer;background:var(--brand);color:#fff}
+  .btn:disabled{opacity:.55}
+  .btn.ghost{background:transparent;color:var(--brand);border:1.5px solid var(--brand)}
+  .btn.wa{background:#1f8f4e}
+  .err{color:var(--danger);font-size:14px;margin:10px 0 0;min-height:1em}
+  .ok-wrap{text-align:center}
+  .folio{font:700 34px/1 ui-monospace,Menlo,Consolas,monospace;letter-spacing:.18em;color:var(--brand);margin:6px 0 14px}
+  pre.resumen{white-space:pre-wrap;text-align:left;background:var(--bg);border-radius:10px;padding:12px;font:14px/1.5 inherit;margin:0 0 14px}
+  details summary{cursor:pointer;color:var(--brand);font-weight:600;font-size:15px}
+  .foot{text-align:center;font-size:12px;color:var(--muted);margin-top:18px}
+  .demo{background:#fff6cf;color:#6b5500;font-size:12px;text-align:center;padding:6px}
+  /* Agente Privadas */
+  .agent{border:1.5px solid var(--brand)}
+  .ag-head{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+  .ag-av{width:42px;height:42px;border-radius:50%;background:var(--brand);color:#fff;display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+  .ag-name{font-weight:700;font-size:16px}
+  .chat{display:flex;flex-direction:column;gap:8px;margin:6px 0 10px}
+  .msg{max-width:88%;padding:9px 12px;border-radius:14px;font-size:15px;white-space:pre-wrap;line-height:1.35}
+  .msg.bot{background:var(--brand-soft);align-self:flex-start;border-bottom-left-radius:4px}
+  .msg.me{background:#e9ecef;align-self:flex-end;border-bottom-right-radius:4px}
+  .msg.ok{background:#e3f4e9;border:1px solid #9fd3b2}
+  .msg .small{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+  .composer{display:flex;gap:8px;align-items:flex-end}
+  .composer textarea{min-height:48px;flex:1}
+  .ic{flex:0 0 auto;width:48px;height:48px;border-radius:50%;border:0;font-size:20px;cursor:pointer;display:grid;place-items:center}
+  .ic.mic{background:var(--brand);color:#fff}
+  .ic.mic.rec{background:var(--danger);animation:pulse 1s infinite}
+  .ic.send{background:var(--brand-soft);color:var(--brand)}
+  .ic:disabled{opacity:.5}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(179,38,30,.5)}100%{box-shadow:0 0 0 12px rgba(179,38,30,0)}}
+  .rcard{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-top:8px;font-size:14px;position:relative}
+  .rcard b{font-size:15px}
+  .rcard .x{position:absolute;top:6px;right:8px;border:0;background:none;font-size:18px;color:var(--muted);cursor:pointer}
+  .rcard .ed{border:0;background:none;color:var(--brand);font:inherit;font-size:13px;font-weight:600;padding:4px 0 0;cursor:pointer}
+  .rcard.falta{border-color:var(--warn);background:var(--warn-soft)}
+  .typing{display:inline-flex;gap:4px}
+  .typing i{width:7px;height:7px;border-radius:50%;background:var(--brand);opacity:.4;animation:blink 1.2s infinite}
+  .typing i:nth-child(2){animation-delay:.2s}.typing i:nth-child(3){animation-delay:.4s}
+  @keyframes blink{50%{opacity:1}}
+  .linkbtn{display:block;width:100%;background:none;border:0;color:var(--brand);font:inherit;font-weight:600;padding:10px;cursor:pointer;text-align:center}
+</style>
+</head>
+<body>
+<div id="demoBar" class="demo hide">Vista de demostración · los datos no se guardan</div>
+<header>
+  <div class="sub">Control de accesos</div>
+  <h1 id="tituloPrivada">Privadas del Río</h1>
+</header>
+
+<main>
+  <form id="form" autocomplete="on" novalidate>
+    <!-- 1. Domicilio -->
+    <section class="card">
+      <div class="step"><b>1</b> Tu domicilio</div>
+      <select id="casa" required><option value="">Cargando…</option></select>
+    </section>
+
+    <!-- Agente Privadas -->
+    <section class="card agent hide" id="secAgente">
+      <div class="ag-head">
+        <div class="ag-av">🤖</div>
+        <div><div class="ag-name">Agente Privadas</div><div class="note" style="margin:0">Mándame un audio o escríbeme quién viene y yo aviso a caseta.</div></div>
+      </div>
+      <div class="chat" id="chat"></div>
+      <div id="agConfirm" class="hide">
+        <div id="agCards"></div>
+        <div class="row" style="margin-top:6px">
+          <div><label for="agNombre">Tu nombre</label><input id="agNombre" maxlength="80" autocomplete="name" placeholder="Quién registra"></div>
+          <div><label for="agTel">Tu celular</label><input id="agTel" type="tel" maxlength="14" inputmode="numeric" autocomplete="tel" placeholder="81 1234 5678"></div>
+        </div>
+        <p class="err" id="agErr"></p>
+        <button class="btn" id="agOk" type="button">✅ Confirmar y avisar a caseta</button>
+      </div>
+      <div class="composer" style="margin-top:10px">
+        <textarea id="agTexto" rows="2" maxlength="1500" placeholder="Ej. Mañana a las 4 viene mi suegra Rosa en una Tiguan blanca"></textarea>
+        <button type="button" class="ic mic" id="agMic" aria-label="Grabar audio">🎤</button>
+        <button type="button" class="ic send" id="agSend" aria-label="Enviar">➤</button>
+      </div>
+      <div class="note" id="agHint">Toca 🎤 para grabar (máx. 1 min) y otra vez para enviar. También puedes escribir o dictar con el micrófono de tu teclado.</div>
+    </section>
+    <button type="button" class="linkbtn hide" id="btnManual">📝 Prefiero llenar el formulario paso a paso</button>
+
+    <!-- 2. Tipo -->
+    <section class="card" id="secTipo">
+      <div class="step"><b>2</b> ¿Quién viene?</div>
+      <div class="tiles" id="tiposWrap"></div>
+      <div id="catWrap" class="hide">
+        <label>Especifica</label>
+        <div class="chips" id="cats"></div>
+      </div>
+    </section>
+
+    <!-- 3. Detalles -->
+    <section class="card hide" id="secDetalles">
+      <div class="step"><b>3</b> Detalles</div>
+
+      <label for="nombre" id="lblNombre">Nombre completo de la persona</label>
+      <input id="nombre" maxlength="120" placeholder="Ej. Juan Pérez López">
+
+      <div id="fEmpresa" class="hide">
+        <label for="empresa">Empresa / compañía</label>
+        <input id="empresa" maxlength="80" placeholder="Ej. Gas Natural, Totalplay…">
+      </div>
+
+      <div id="fPersonas">
+        <label for="personas">¿Cuántas personas en total?</label>
+        <input id="personas" type="number" min="1" max="99" value="1" inputmode="numeric">
+      </div>
+
+      <div class="row">
+        <div><label for="fecha">Fecha</label><input id="fecha" type="date"></div>
+        <div></div>
+      </div>
+      <div class="row">
+        <div><label for="horaDesde">Llega aprox.</label><input id="horaDesde" type="time"></div>
+        <div><label for="horaHasta">Se va aprox.</label><input id="horaHasta" type="time"></div>
+      </div>
+
+      <label class="toggle"><input type="checkbox" id="repite"> Se repite (personal fijo, huésped, obra)</label>
+      <div id="fRepite" class="hide">
+        <label>¿Qué días?</label>
+        <div class="chips" id="dias"></div>
+        <label for="fechaFin">Hasta</label>
+        <input id="fechaFin" type="date">
+        <div class="note">Máximo 120 días; después se vuelve a registrar. Así la lista se mantiene al día.</div>
+      </div>
+
+      <label>¿Cómo llega?</label>
+      <div class="chips" id="vehiculos"></div>
+      <div id="fVehiculo" class="hide">
+        <div class="row">
+          <div><label for="placas">Placas</label><input id="placas" maxlength="12" placeholder="ABC-123-D" style="text-transform:uppercase"></div>
+          <div><label for="descVehiculo">Marca / color</label><input id="descVehiculo" maxlength="60" placeholder="Versa gris"></div>
+        </div>
+      </div>
+
+      <div id="fInstruccion" class="hide">
+        <label>Indicación para el guardia</label>
+        <div class="chips" id="instrucciones"></div>
+      </div>
+
+      <label for="notas">Notas para caseta (opcional)</label>
+      <textarea id="notas" maxlength="300" placeholder="Ej. Trae herramienta, viene a revisar el boiler…"></textarea>
+
+      <div id="alertaMudanza" class="alert hide">Las mudanzas se notifican a caseta con prioridad. El guardia verificará identidad antes de permitir la salida o entrada de muebles.</div>
+    </section>
+
+    <!-- 4. Quien registra -->
+    <section class="card hide" id="secQuien">
+      <div class="step"><b>4</b> ¿Quién registra?</div>
+      <label for="registradoPor">Tu nombre</label>
+      <input id="registradoPor" maxlength="80" autocomplete="name" placeholder="Nombre de quien vive en la casa">
+      <label for="telRegistro">Tu celular (caseta te llamará si hay dudas)</label>
+      <input id="telRegistro" type="tel" maxlength="14" inputmode="numeric" autocomplete="tel" placeholder="81 1234 5678">
+      <label class="toggle"><input type="checkbox" id="recordar" checked> Recordar mis datos en este teléfono</label>
+      <p class="err" id="err"></p>
+      <button class="btn" id="btnEnviar" type="submit">Avisar a caseta</button>
+    </section>
+  </form>
+
+  <!-- Confirmación -->
+  <section class="card ok-wrap hide" id="secOk">
+    <div style="font-size:40px">✅</div>
+    <h2 style="margin:4px 0 2px">Caseta ya está avisada</h2>
+    <div class="note">Tu folio (guárdalo para cancelar)</div>
+    <div class="folio" id="folio"></div>
+    <pre class="resumen" id="resumen"></pre>
+    <a class="btn wa" id="btnWA" target="_blank" rel="noopener" style="display:block;text-decoration:none;margin-bottom:10px">Enviar instrucciones a mi visita</a>
+    <button class="btn ghost" id="btnOtro" type="button">Registrar otro</button>
+  </section>
+
+  <!-- Cancelar -->
+  <section class="card">
+    <details>
+      <summary>Cancelar un registro</summary>
+      <label for="cFolio">Folio</label>
+      <input id="cFolio" maxlength="6" placeholder="Ej. K7P2Q" style="text-transform:uppercase">
+      <div class="note">Usa el domicilio seleccionado arriba.</div>
+      <p class="err" id="cErr"></p>
+      <button class="btn ghost" id="btnCancelar" type="button">Cancelar registro</button>
+    </details>
+  </section>
+
+  <div class="foot">Esta información solo la ve caseta y la administración de la privada.<br>No compartas este enlace fuera de la privada.</div>
+</main>
+
+<script>
+/* ---------- Capa de API: Apps Script real o demo local ---------- */
+var IS_GAS = typeof google !== 'undefined' && google.script && google.script.run;
+/* Cuando la página vive fuera de Google (hosting propio), habla con Apps Script por esta URL */
+var API_URL = 'https://script.google.com/macros/s/AKfycbwkh0vzCiW7sUU_cc0B2_KZhi3LToM0-Y5_YGM3bffKkrzTcnH7hieaAVTgLGNJyz8SIQ/exec';
+var IS_DEMO = !IS_GAS && (location.protocol==='file:' || /[?&]demo/.test(location.search));
+function api(fn){
+  var args = Array.prototype.slice.call(arguments,1);
+  return new Promise(function(res,rej){
+    if(IS_GAS){ var r = google.script.run.withSuccessHandler(res).withFailureHandler(function(e){rej(e)}); r[fn].apply(r,args); }
+    else if(!IS_DEMO){
+      fetch(API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({accion:fn,args:args}),redirect:'follow'})
+        .then(function(x){ return x.json(); })
+        .then(function(j){ if(j.ok) res(j.data); else rej(new Error(j.error||'Error')); })
+        .catch(function(){ rej(new Error('Sin conexión con el servidor. Revisa tu internet e intenta de nuevo.')); });
+    }
+    else { setTimeout(function(){ try{ res(MOCK[fn].apply(null,args)); }catch(e){ rej(e); } },300); }
+  });
+}
+var MOCK = {
+  getInitData:function(){
+    var c=[['Rio Plata',[5336,5334,5332,5330,5328,5326,5324,5322,5320,5318,5316,5314,5312]],
+           ['Rio Rojo',[5315,5317,5319,5321,5324,5325,5327,8001,8002,8004,8005,8006,8007,8008,8009,8010,8012,8014,8016]],
+           ['Rio Blanco',[8000,8002,8003,8004,8005,8006,8007,8008,8009,8010,8011,8012,8013,8014,8015,8016]]];
+    var casas=[],n=1; c.forEach(function(s){s[1].forEach(function(x){casas.push({id:n++,domicilio:s[0]+' '+x});});});
+    casas.push({id:49,domicilio:'Rio Rojo 5323'});
+    return {privada:'Privadas del Río',casas:casas,agente:true,tipos:{
+      'Visita':['Familiar / amigos','Reunión / fiesta','Huésped (se queda varios días)','Visita inmobiliaria / renta','Otro'],
+      'Personal / servicio doméstico':['Limpieza','Jardinero','Albañil / obra','Plomero / electricista','Niñera / cuidador(a)','Chofer','Otro'],
+      'Paquetería / delivery':['Amazon','Mercado Libre','DHL / FedEx / Estafeta','Comida a domicilio','Súper / farmacia','Otro'],
+      'Proveedor / técnico':['Gas','Agua','Internet / cable','CFE','Fumigación','Mantenimiento / garantía','Otro'],
+      'Mudanza':['Entrada (llegan)','Salida (se van)']}};
+  },
+  crearRegistro:function(d){
+    if(!d.casa) throw new Error('Selecciona un domicilio válido.');
+    return {ok:true,folio:'K'+Math.random().toString(36).slice(2,6).toUpperCase(),resumen:d.tipo+' · '+d.categoria+'\nNombre: '+d.nombre+'\nFecha: '+d.fecha+'\nHorario: '+(d.horaDesde||'?')+' a '+(d.horaHasta||'?')+'\nFolio: K7P2Q'};
+  },
+  cancelarRegistro:function(f){ return {ok:true,mensaje:'Registro '+f+' cancelado. Caseta fue notificada.'}; },
+  interpretarMensaje:function(e){
+    var m=hoy(), t=new Date(); t.setDate(t.getDate()+1); t.setMinutes(t.getMinutes()-t.getTimezoneOffset()); var man=t.toISOString().slice(0,10);
+    return {transcripcion:e.texto||'(audio de demostración)',
+      registros:[{tipo:'Visita',categoria:'Familiar / amigos',nombre:'Rosa Martínez (suegra) y cuñado',empresa:'',personas:2,fecha:man,horaDesde:'16:00',horaHasta:'',dias:[],fechaFin:'',vehiculo:'Auto',placas:'',descVehiculo:'Tiguan blanca',instruccion:'',notas:''},
+                 {tipo:'Proveedor / técnico',categoria:'Gas',nombre:'Repartidor de gas',empresa:'',personas:1,fecha:m,horaDesde:'',horaHasta:'',dias:[],fechaFin:'',vehiculo:'',placas:'',descVehiculo:'',instruccion:'',notas:''}],
+      faltantes:['¿Sabes las placas de la Tiguan? (opcional)'],
+      mensaje:'¡Listo! Entendí 2 accesos: la visita de tu suegra con tu cuñado mañana a las 4 y el gas. ¿Lo confirmo?'};
+  }
+};
+
+/* ---------- UI ---------- */
+var $ = function(id){return document.getElementById(id)};
+var ICONOS = {'Visita':'👤','Personal / servicio doméstico':'🧹','Paquetería / delivery':'📦','Proveedor / técnico':'🔧','Mudanza':'🚚'};
+var DIAS = [['1','Lun'],['2','Mar'],['3','Mié'],['4','Jue'],['5','Vie'],['6','Sáb'],['0','Dom']];
+var VEHICULOS = ['A pie','Auto','Moto','Camioneta / pickup','Camión / mudanza','Transporte app (Uber/Didi)'];
+var INSTRUCCIONES = ['Recibir en caseta','Dejar pasar a la casa','Llamarme antes de dejar pasar'];
+var state = {tipo:'',categoria:'',vehiculo:'',instruccion:'',dias:[]};
+var DATA = null;
+
+function hoy(){ var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10); }
+function store(k,v){ try{ if(v===undefined) return localStorage.getItem(k); localStorage.setItem(k,v);}catch(e){ return null; } }
+
+function chipGroup(el, opciones, onPick, multi){
+  el.innerHTML='';
+  opciones.forEach(function(o){
+    var val = Array.isArray(o)?o[0]:o, txt = Array.isArray(o)?o[1]:o;
+    var b=document.createElement('button'); b.type='button'; b.className='chip'; b.textContent=txt; b.setAttribute('aria-pressed','false');
+    b.onclick=function(){
+      if(multi){ var on=b.getAttribute('aria-pressed')!=='true'; b.setAttribute('aria-pressed',on); onPick(val,on); }
+      else { Array.prototype.forEach.call(el.children,function(c){c.setAttribute('aria-pressed','false')}); b.setAttribute('aria-pressed','true'); onPick(val); }
+    };
+    el.appendChild(b);
+  });
+}
+
+function init(){
+  if(IS_DEMO) $('demoBar').classList.remove('hide');
+  api('getInitData').then(function(d){
+    DATA=d; $('tituloPrivada').textContent=d.privada;
+    var sel=$('casa'); sel.innerHTML='<option value="">Selecciona tu domicilio…</option>';
+    var calles={}; d.casas.forEach(function(c){ var calle=c.domicilio.replace(/\s\d+$/,''); (calles[calle]=calles[calle]||[]).push(c); });
+    Object.keys(calles).forEach(function(k){
+      var g=document.createElement('optgroup'); g.label=k;
+      calles[k].sort(function(a,b){return a.domicilio.localeCompare(b.domicilio,'es',{numeric:true})}).forEach(function(c){
+        var o=document.createElement('option'); o.value=c.id; o.textContent=c.domicilio; g.appendChild(o);
+      });
+      sel.appendChild(g);
+    });
+    var tw=$('tiposWrap'); tw.innerHTML='';
+    Object.keys(d.tipos).forEach(function(t){
+      var b=document.createElement('button'); b.type='button'; b.className='tile'; b.setAttribute('aria-pressed','false');
+      b.innerHTML='<span class="ico">'+(ICONOS[t]||'📝')+'</span><span class="t">'+t+'</span>';
+      b.onclick=function(){ Array.prototype.forEach.call(tw.children,function(c){c.setAttribute('aria-pressed','false')}); b.setAttribute('aria-pressed','true'); elegirTipo(t); };
+      tw.appendChild(b);
+    });
+    // Datos recordados
+    if(store('pdr_casa')) sel.value=store('pdr_casa');
+    if(store('pdr_nombre')) $('registradoPor').value=store('pdr_nombre');
+    if(store('pdr_tel')) $('telRegistro').value=store('pdr_tel');
+    $('agNombre').value=store('pdr_nombre')||''; $('agTel').value=store('pdr_tel')||'';
+    if(d.agente){
+      $('secAgente').classList.remove('hide'); $('btnManual').classList.remove('hide'); $('secTipo').classList.add('hide');
+      burbuja('bot','¡Hola! Soy el Agente Privadas 👋\nDime quién viene, qué día y a qué hora. Puedes mandarme un audio.');
+    }
+  }).catch(function(e){ $('casa').innerHTML='<option>Error al cargar. Recarga la página.</option>'; });
+
+  $('fecha').value=hoy(); $('fecha').min=hoy(); $('fechaFin').min=hoy();
+  chipGroup($('dias'),DIAS,function(v,on){ state.dias = on ? state.dias.concat(v) : state.dias.filter(function(x){return x!==v}); },true);
+  chipGroup($('vehiculos'),VEHICULOS,function(v){ state.vehiculo=v; $('fVehiculo').classList.toggle('hide', v==='A pie' || v.indexOf('app')>=0); });
+  chipGroup($('instrucciones'),INSTRUCCIONES,function(v){ state.instruccion=v; });
+  $('repite').onchange=function(){ $('fRepite').classList.toggle('hide',!this.checked); };
+  $('form').onsubmit=enviar;
+  $('btnOtro').onclick=function(){ $('secOk').classList.add('hide'); $('form').classList.remove('hide'); window.scrollTo(0,0); };
+  $('btnCancelar').onclick=cancelar;
+  $('btnManual').onclick=function(){ $('secTipo').classList.remove('hide'); this.classList.add('hide'); $('secTipo').scrollIntoView({behavior:'smooth'}); };
+  $('agSend').onclick=function(){ agEnviar({texto:$('agTexto').value.trim()}); };
+  $('agTexto').onkeydown=function(e){ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); $('agSend').click(); } };
+  $('agMic').onclick=toggleMic;
+  $('agOk').onclick=agConfirmar;
+}
+
+function elegirTipo(t){
+  state.tipo=t; state.categoria='';
+  chipGroup($('cats'), DATA.tipos[t], function(v){ state.categoria=v; });
+  $('catWrap').classList.remove('hide');
+  $('secDetalles').classList.remove('hide'); $('secQuien').classList.remove('hide');
+  var paq = t==='Paquetería / delivery', prov = t==='Proveedor / técnico';
+  $('fEmpresa').classList.toggle('hide', !(paq||prov||t==='Mudanza'||t==='Personal / servicio doméstico'));
+  $('fPersonas').classList.toggle('hide', paq);
+  $('fInstruccion').classList.toggle('hide', !paq);
+  $('alertaMudanza').classList.toggle('hide', t!=='Mudanza');
+  $('lblNombre').textContent = paq ? 'Nombre del repartidor o descripción del paquete' :
+                               prov ? 'Nombre del técnico (si lo sabes)' :
+                               t==='Mudanza' ? 'Nombre del responsable de la mudanza' : 'Nombre completo de la persona';
+  $('nombre').placeholder = paq ? 'Ej. Paquete Amazon a nombre de Ana' : 'Ej. Juan Pérez López';
+}
+
+function enviar(ev){
+  ev.preventDefault(); $('err').textContent='';
+  var d = {
+    casa:$('casa').value, tipo:state.tipo, categoria:state.categoria, nombre:$('nombre').value.trim(),
+    empresa:$('empresa').value.trim(), personas:$('personas').value, fecha:$('fecha').value,
+    horaDesde:$('horaDesde').value, horaHasta:$('horaHasta').value,
+    dias:$('repite').checked?state.dias:[], fechaFin:$('repite').checked?$('fechaFin').value:'',
+    vehiculo:state.vehiculo, placas:$('placas').value.trim(), descVehiculo:$('descVehiculo').value.trim(),
+    instruccion:state.instruccion, notas:$('notas').value.trim(),
+    registradoPor:$('registradoPor').value.trim(), telRegistro:$('telRegistro').value.replace(/\D/g,'')
+  };
+  var falta = !d.casa?'Selecciona tu domicilio.':!d.tipo?'Elige quién viene.':!d.categoria?'Especifica el tipo ('+d.tipo+').':
+    !d.nombre?'Escribe el nombre.':!d.fecha?'Selecciona la fecha.':
+    ($('repite').checked && (!d.dias.length||!d.fechaFin))?'Elige los días y hasta cuándo se repite.':
+    !d.registradoPor?'Escribe tu nombre.':d.telRegistro.length<10?'Escribe tu celular a 10 dígitos.':'';
+  if(falta){ $('err').textContent=falta; return; }
+  if($('recordar').checked){ store('pdr_casa',d.casa); store('pdr_nombre',d.registradoPor); store('pdr_tel',d.telRegistro); }
+  var b=$('btnEnviar'); b.disabled=true; b.textContent='Enviando…';
+  api('crearRegistro',d).then(function(r){
+    $('folio').textContent=r.folio; $('resumen').textContent=r.resumen;
+    var dom = $('casa').options[$('casa').selectedIndex].text;
+    var msg = 'Hola, ya te registré en la caseta de '+(DATA?DATA.privada:'la privada')+'.\n'+
+      'Domicilio: '+dom+'\nFecha: '+d.fecha+(d.horaDesde?' · '+d.horaDesde:'')+
+      '\nAl llegar da tu nombre completo al guardia'+(d.placas?' (placas '+d.placas.toUpperCase()+')':'')+'.';
+    $('btnWA').href='https://wa.me/?text='+encodeURIComponent(msg);
+    $('form').classList.add('hide'); $('secOk').classList.remove('hide'); window.scrollTo(0,0);
+    resetForm();
+  }).catch(function(e){ $('err').textContent=(e&&e.message)||String(e); })
+    .then(function(){ b.disabled=false; b.textContent='Avisar a caseta'; });
+}
+
+function resetForm(){
+  ['nombre','empresa','placas','descVehiculo','notas','horaDesde','horaHasta','fechaFin'].forEach(function(id){$(id).value=''});
+  $('personas').value=1; $('fecha').value=hoy(); $('repite').checked=false; $('fRepite').classList.add('hide');
+  state.dias=[]; state.vehiculo=''; state.instruccion='';
+  ['dias','vehiculos','instrucciones'].forEach(function(id){ Array.prototype.forEach.call($(id).children,function(c){c.setAttribute('aria-pressed','false')}); });
+  $('fVehiculo').classList.add('hide');
+}
+
+function cancelar(){
+  $('cErr').textContent='';
+  var f=$('cFolio').value.trim().toUpperCase(), c=$('casa').value;
+  if(!c){ $('cErr').textContent='Selecciona tu domicilio arriba.'; return; }
+  if(f.length<5){ $('cErr').textContent='Escribe el folio de 5 caracteres.'; return; }
+  api('cancelarRegistro',f,c).then(function(r){ $('cErr').style.color='var(--brand)'; $('cErr').textContent=r.mensaje; $('cFolio').value=''; })
+    .catch(function(e){ $('cErr').style.color=''; $('cErr').textContent=(e&&e.message)||String(e); });
+}
+
+/* ---------- Agente Privadas ---------- */
+var AG = {regs:[], hist:'', ocupado:false};
+var DIAS_TXT = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+function burbuja(quien, texto, extra){
+  var b=document.createElement('div'); b.className='msg '+quien; b.textContent=texto;
+  if(extra){ var s=document.createElement('span'); s.className='small'; s.textContent=extra; b.appendChild(s); }
+  $('chat').appendChild(b); b.scrollIntoView({block:'nearest',behavior:'smooth'}); return b;
+}
+function pensando(on){
+  var t=$('agTyping');
+  if(on && !t){ t=document.createElement('div'); t.id='agTyping'; t.className='msg bot'; t.innerHTML='<span class="typing"><i></i><i></i><i></i></span> Entendiendo tu mensaje…'; $('chat').appendChild(t); }
+  if(!on && t) t.remove();
+  AG.ocupado=on; $('agSend').disabled=on; $('agMic').disabled=on && !(REC.rec && REC.rec.state==='recording');
+}
+function fechaCorta(f){ var d=new Date(f+'T12:00:00Z'); var m=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic']; return (f===hoy()?'Hoy, ':'')+DIAS_TXT[d.getUTCDay()]+' '+d.getUTCDate()+' '+m[d.getUTCMonth()]; }
+
+function agEnviar(e){
+  if(AG.ocupado) return;
+  if(!$('casa').value){ burbuja('bot','Primero selecciona tu domicilio arriba 👆'); $('casa').focus(); return; }
+  if(!e.texto && !e.audio) return;
+  burbuja('me', e.texto || '🎤 Audio'+(e.dur?' ('+e.dur+' s)':''));
+  $('agTexto').value='';
+  pensando(true);
+  api('interpretarMensaje',{casa:$('casa').value,texto:e.texto||'',audio:e.audio||'',mime:e.mime||'',historial:AG.hist})
+    .then(function(r){
+      pensando(false);
+      if(e.audio && r.transcripcion){ var ult=$('chat').querySelectorAll('.msg.me'); ult=ult[ult.length-1]; if(ult){ var s=document.createElement('span'); s.className='small'; s.textContent='“'+r.transcripcion+'”'; ult.appendChild(s);} }
+      AG.hist += 'Vecino: '+(r.transcripcion||e.texto||'')+'\nAgente entendió: '+JSON.stringify(r.registros)+'\n';
+      var extra = r.faltantes && r.faltantes.length ? 'Me falta: '+r.faltantes.join(' · ') : '';
+      burbuja('bot', r.mensaje, extra);
+      AG.regs = r.registros || [];
+      pintarCards();
+    })
+    .catch(function(err){ pensando(false); burbuja('bot','😕 '+((err&&err.message)||'No pude procesarlo.')+'\nPuedes intentar otra vez o usar el formulario.'); });
+}
+
+function pintarCards(){
+  var w=$('agCards'); w.innerHTML='';
+  if(!AG.regs.length){ $('agConfirm').classList.add('hide'); return; }
+  AG.regs.forEach(function(r,i){
+    var c=document.createElement('div'); c.className='rcard'+(r.nombre?'':' falta');
+    var l=[];
+    l.push((ICONOS[r.tipo]||'📝')+' '+r.categoria+(r.empresa?' · '+r.empresa:''));
+    l.push('📅 '+fechaCorta(r.fecha)+(r.horaDesde?' · '+r.horaDesde:'')+(r.horaHasta?'–'+r.horaHasta:''));
+    if(r.dias&&r.dias.length) l.push('🔁 '+r.dias.map(function(d){return DIAS_TXT[d]}).join(', ')+' hasta '+fechaCorta(r.fechaFin));
+    if(r.vehiculo||r.placas||r.descVehiculo) l.push('🚗 '+[r.vehiculo,r.descVehiculo,r.placas].filter(String).join(' · '));
+    if(r.instruccion) l.push('📌 '+r.instruccion);
+    if(r.notas) l.push('📝 '+r.notas);
+    c.innerHTML='<button class="x" type="button" title="Quitar">×</button><b></b>'+(r.personas>1?' <span class="note">('+r.personas+' personas)</span>':'')+'<div class="det"></div><button class="ed" type="button">✏️ Corregir en formulario</button>';
+    c.querySelector('b').textContent = r.nombre || '⚠️ Falta el nombre';
+    c.querySelector('.det').textContent = l.join('\n'); c.querySelector('.det').style.whiteSpace='pre-wrap';
+    c.querySelector('.x').onclick=function(){ AG.regs.splice(i,1); pintarCards(); };
+    c.querySelector('.ed').onclick=function(){ cargarEnFormulario(r); AG.regs.splice(i,1); pintarCards(); };
+    w.appendChild(c);
+  });
+  $('agOk').textContent = '✅ Confirmar '+(AG.regs.length>1?AG.regs.length+' registros':'y avisar a caseta');
+  $('agConfirm').classList.remove('hide'); $('agErr').textContent='';
+  $('agConfirm').scrollIntoView({block:'nearest',behavior:'smooth'});
+}
+
+function agConfirmar(){
+  var nombre=$('agNombre').value.trim(), tel=$('agTel').value.replace(/\D/g,''), casa=$('casa').value;
+  if(!casa){ $('agErr').textContent='Selecciona tu domicilio.'; return; }
+  if(AG.regs.some(function(r){return !r.nombre})){ $('agErr').textContent='Falta el nombre en un registro: dímelo en el chat o corrígelo en el formulario.'; return; }
+  if(!nombre){ $('agErr').textContent='Escribe tu nombre.'; return; }
+  if(tel.length<10){ $('agErr').textContent='Escribe tu celular a 10 dígitos.'; return; }
+  store('pdr_casa',casa); store('pdr_nombre',nombre); store('pdr_tel',tel);
+  var b=$('agOk'); b.disabled=true; b.textContent='Avisando a caseta…';
+  var lista=AG.regs.slice(), folios=[], i=0;
+  (function sig(){
+    if(i>=lista.length){
+      burbuja('bot','✅ ¡Listo! Caseta ya está avisada.\nFolio'+(folios.length>1?'s':'')+': '+folios.join(', ')+'\nGuárdalo por si necesitas cancelar.').classList.add('ok');
+      AG.regs=[]; AG.hist=''; pintarCards(); b.disabled=false; return;
+    }
+    var r=lista[i]; var d={};
+    for(var k in r) d[k]=r[k];
+    d.casa=casa; d.registradoPor=nombre; d.telRegistro=tel; d.origen='Agente';
+    api('crearRegistro',d).then(function(res){ folios.push(res.folio); AG.regs.splice(AG.regs.indexOf(r),1); i++; sig(); })
+      .catch(function(err){ $('agErr').textContent=((err&&err.message)||String(err))+(folios.length?' (ya se guardaron: '+folios.join(', ')+')':''); pintarCards(); b.disabled=false; });
+  })();
+}
+
+/* Pasa un registro del agente al formulario manual para corregirlo */
+function cargarEnFormulario(r){
+  $('secTipo').classList.remove('hide'); $('btnManual').classList.add('hide');
+  Array.prototype.forEach.call($('tiposWrap').children,function(t){ if(t.querySelector('.t').textContent===r.tipo) t.click(); });
+  Array.prototype.forEach.call($('cats').children,function(c){ if(c.textContent===r.categoria) c.click(); });
+  $('nombre').value=r.nombre||''; $('empresa').value=r.empresa||''; $('personas').value=r.personas||1;
+  $('fecha').value=r.fecha||hoy(); $('horaDesde').value=r.horaDesde||''; $('horaHasta').value=r.horaHasta||'';
+  $('notas').value=r.notas||''; $('placas').value=r.placas||''; $('descVehiculo').value=r.descVehiculo||'';
+  if(r.dias&&r.dias.length){ $('repite').checked=true; $('fRepite').classList.remove('hide'); $('fechaFin').value=r.fechaFin||'';
+    Array.prototype.forEach.call($('dias').children,function(c){ var v=DIAS.filter(function(x){return x[1]===c.textContent})[0]; if(v&&r.dias.indexOf(v[0])>=0) c.click(); }); }
+  Array.prototype.forEach.call($('vehiculos').children,function(c){ if(c.textContent===r.vehiculo) c.click(); });
+  Array.prototype.forEach.call($('instrucciones').children,function(c){ if(c.textContent===r.instruccion) c.click(); });
+  $('secDetalles').scrollIntoView({behavior:'smooth'});
+}
+
+/* ---------- Grabación de audio ---------- */
+var REC = {rec:null, chunks:[], t0:0, timer:null};
+function sinMic(){
+  $('agHint').textContent = IS_GAS
+    ? '🎙️ Aquí no puedo usar el micrófono. Escríbeme tu mensaje y toca ➤.'
+    : '🎙️ No me diste permiso de usar el micrófono. Actívalo en el candado 🔒 junto a la dirección, o escríbeme y toca ➤.';
+  $('agHint').style.color='var(--warn)'; $('agTexto').focus();
+}
+function toggleMic(){
+  if(REC.rec && REC.rec.state==='recording'){ REC.rec.stop(); return; }
+  if(!$('casa').value){ burbuja('bot','Primero selecciona tu domicilio arriba 👆'); $('casa').focus(); return; }
+  if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia || !window.MediaRecorder){ sinMic(); return; }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    REC.chunks=[]; REC.rec=new MediaRecorder(stream);
+    REC.rec.ondataavailable=function(e){ if(e.data && e.data.size) REC.chunks.push(e.data); };
+    REC.rec.onstop=function(){
+      stream.getTracks().forEach(function(t){t.stop()}); clearInterval(REC.timer);
+      $('agMic').classList.remove('rec'); $('agMic').textContent='🎤';
+      var dur=Math.round((Date.now()-REC.t0)/1000);
+      $('agHint').textContent='Toca 🎤 para grabar (máx. 1 min) y otra vez para enviar.';
+      if(dur<1){ return; }
+      var blob=new Blob(REC.chunks,{type:REC.rec.mimeType||'audio/webm'});
+      pensando(true);
+      audioParaEnviar(blob).then(function(a){ pensando(false); agEnviar({audio:a.data,mime:a.mime,dur:dur}); })
+        .catch(function(){ pensando(false); burbuja('bot','😕 No pude leer el audio. Intenta escribirlo.'); });
+    };
+    REC.rec.start(); REC.t0=Date.now();
+    $('agMic').classList.add('rec'); $('agMic').textContent='■';
+    REC.timer=setInterval(function(){
+      var s=Math.round((Date.now()-REC.t0)/1000);
+      $('agHint').textContent='🔴 Grabando… '+s+' s · toca ■ para enviar';
+      if(s>=60) REC.rec.stop();
+    },250);
+  }).catch(sinMic);
+}
+function b64(buf){ var bytes=new Uint8Array(buf), s='', CH=0x8000; for(var i=0;i<bytes.length;i+=CH){ s+=String.fromCharCode.apply(null,bytes.subarray(i,i+CH)); } return btoa(s); }
+/* Convierte a WAV mono 16 kHz (formato que la IA siempre acepta); si falla, manda el original */
+function audioParaEnviar(blob){
+  return blob.arrayBuffer().then(function(buf){
+    var AC=window.AudioContext||window.webkitAudioContext;
+    if(!AC) return {data:b64(buf),mime:blob.type};
+    var ctx=new AC();
+    return new Promise(function(res,rej){ ctx.decodeAudioData(buf.slice(0),res,rej); }).then(function(ab){
+      try{ ctx.close(); }catch(e){}
+      return {data:b64(wav16k(ab)),mime:'audio/wav'};
+    }).catch(function(){ return {data:b64(buf),mime:(blob.type||'audio/webm').split(';')[0]}; });
+  });
+}
+function wav16k(ab){
+  var rate=16000, n=ab.numberOfChannels, len=ab.length, src=new Float32Array(len);
+  for(var c=0;c<n;c++){ var d=ab.getChannelData(c); for(var i=0;i<len;i++) src[i]+=d[i]/n; }
+  var ratio=ab.sampleRate/rate, outLen=Math.floor(len/ratio), out=new Int16Array(outLen);
+  for(var j=0;j<outLen;j++){ var p=j*ratio, k=Math.floor(p), f=p-k, v=src[k]*(1-f)+(src[k+1]||0)*f; v=Math.max(-1,Math.min(1,v)); out[j]=v<0?v*0x8000:v*0x7FFF; }
+  var buf=new ArrayBuffer(44+out.length*2), dv=new DataView(buf);
+  function ws(o,s){ for(var i=0;i<s.length;i++) dv.setUint8(o+i,s.charCodeAt(i)); }
+  ws(0,'RIFF'); dv.setUint32(4,36+out.length*2,true); ws(8,'WAVE'); ws(12,'fmt '); dv.setUint32(16,16,true);
+  dv.setUint16(20,1,true); dv.setUint16(22,1,true); dv.setUint32(24,rate,true); dv.setUint32(28,rate*2,true);
+  dv.setUint16(32,2,true); dv.setUint16(34,16,true); ws(36,'data'); dv.setUint32(40,out.length*2,true);
+  for(var m=0;m<out.length;m++) dv.setInt16(44+m*2,out[m],true);
+  return buf;
+}
+
+init();
+</script>
+</body>
+</html>
