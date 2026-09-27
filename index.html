@@ -440,7 +440,7 @@ function agEnviar(e){
       AG.regs = r.registros || [];
       pintarCards();
     })
-    .catch(function(err){ pensando(false); burbuja('bot','😕 '+((err&&err.message)||'No pude procesarlo.')+'\nPuedes intentar otra vez o usar el formulario.'); });
+    .catch(function(err){ pensando(false); burbuja('bot','😕 '+((err&&err.message)||'No pude procesarlo. Intenta otra vez o usa el formulario.')); });
 }
 
 function pintarCards(){
